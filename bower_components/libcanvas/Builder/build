@@ -1,0 +1,22 @@
+#!/usr/bin/php
+
+<?php
+
+require dirname(__FILE__) . '/builder.php';
+
+$stderr = fopen('php://stderr', 'w');
+array_shift($argv);
+
+$builder = new LibCanvasBuilder($argv);
+
+fwrite($stderr, "/**\n");
+fwrite($stderr, " * " . LibCanvasBuilder::NAME . "\n * \n");
+fwrite($stderr, " * Included Components:\n");
+foreach ($builder->getProcessedFiles() as $file){
+	fwrite($stderr, " *   $file\n");
+}
+fwrite($stderr, " */\n\n");
+
+echo $builder->getResult();
+
+fclose($stderr);

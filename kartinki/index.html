@@ -23,7 +23,7 @@
     </style>
 </head>
 <body>
-<audio id="superSong" src="http://dev.ymstat.com/dyn/community/14792_orig.mp3" loop="true"></audio>
+<audio id="superSong" src="http://dev.ymstat.com/dyn/community/14792_orig.mp3" loop="true" ></audio>
 <p class="info">
     Click on image to stop/start slideshow
     <br>
@@ -89,21 +89,20 @@
         }
     });
 
-    document.getElementById('superSong').play();
-
     VK.init({
         apiId: kartinki.appId
     });
 
-    VK.Auth.login(function(response) {
+    VK.Auth.getLoginStatus(function(response) {
         if (response.session) {
-            /* Пользователь успешно авторизовался */
+            /* Authorized Open API user */
             VK.Api.call('photos.getAlbums', {owner_id: kartinki.owner_id}, function (data) {
                 console.log(data);
 
                 kartinki.albums = data.response;
                 var albumIndex = Math.floor(Math.random() * data.response.length);
                 kartinki.getPhotosFromAlbum(kartinki.albums[albumIndex].aid, function(){
+                    document.getElementById('superSong').play();
                     kartinki.startSlideshow();
                 });
             });
@@ -111,7 +110,28 @@
                 /* Выбранные настройки доступа пользователя, если они были запрошены */
             }
         } else {
-            /* Пользователь нажал кнопку Отмена в окне авторизации */
+            /* Unauthorized Open API user */
+            VK.Auth.login(function(response) {
+                if (response.session) {
+                    /* Пользователь успешно авторизовался */
+                    VK.Api.call('photos.getAlbums', {owner_id: kartinki.owner_id}, function (data) {
+                        console.log(data);
+
+                        kartinki.albums = data.response;
+                        var albumIndex = Math.floor(Math.random() * data.response.length);
+                        kartinki.getPhotosFromAlbum(kartinki.albums[albumIndex].aid, function(){
+                            document.getElementById('superSong').play();
+                            kartinki.startSlideshow();
+                        });
+                    });
+                    if (response.settings) {
+                        /* Выбранные настройки доступа пользователя, если они были запрошены */
+                    }
+                } else {
+                    alert('Ну і не сильно хотілось!')
+                    /* Пользователь нажал кнопку Отмена в окне авторизации */
+                }
+            });
         }
     });
 

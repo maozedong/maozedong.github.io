@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <style>
+
+        body {
+            padding: 5vh 5vw 5vh 5vw;
+            text-align: center;
+        }
+
+        #kartinka {
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        #kartinka:hover{
+            box-shadow: 10px 10px 10px -5px #080808;
+        }
+
+    </style>
+</head>
+<body>
+<audio id="superSong" src="http://dev.ymstat.com/dyn/community/14792_orig.mp3" preload="auto"></audio>
+<p class="info">
+    Click on image to stop/start slideshow
+    <br>
+    Click on background to change background color ))
+</p>
+<img id="kartinka" src="">
+<p id="kartinkaText"></p>
+<script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var kartinki = {
+                appId: 4757634,
+                owner_id: 32876665,
+                timeout: 3000,
+                photoIndex: 0,
+
+                startSlideshow: function () {
+                    var kartinka = document.getElementById('kartinka');
+                    var text = document.getElementById('kartinkaText');
+                    kartinka.src = kartinki.photos[kartinki.photoIndex].src_big;
+                    kartinki.photoIndex++;
+                    kartinki.intervalId = setInterval(function () {
+                        if (kartinki.photoIndex >= kartinki.photos.length) {
+                            kartinki.photoIndex = 0;
+                        }
+
+                        kartinka.src = kartinki.photos[kartinki.photoIndex].src_big;
+                        text.textContent = kartinki.photos[kartinki.photoIndex].text;
+                        kartinki.photoIndex++;
+                    }, kartinki.timeout);
+                },
+                stopSlideshow: function () {
+                    clearInterval(kartinki.intervalId);
+                    delete kartinki.intervalId;
+                },
+                getPhotosFromAlbum: function (albumId, callback) {
+                    VK.Api.call('photos.get', {owner_id: kartinki.owner_id, album_id: albumId}, function (data) {
+                        console.log(data);
+                        kartinki.photos = data.response;
+                        callback();
+                    });
+                },
+                getRandomColor: function () {
+                    var letters = '0123456789ABCDEF'.split('');
+                    var color = '#';
+                    for (var i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                }
+            }
+            ;
+
+    document.body.style["background-color"] = kartinki.getRandomColor();
+    document.body.addEventListener("click", function () {
+        document.body.style["background-color"] = kartinki.getRandomColor();
+    });
+    document.getElementById('kartinka').addEventListener("click", function (e) {
+        e.preventDefault();
+        if (kartinki.intervalId) {
+            kartinki.stopSlideshow();
+        } else {
+            kartinki.startSlideshow();
+        }
+    });
+
+    document.getElementById('superSong').play();
+
+    VK.init({
+        apiId: kartinki.appId
+    });
+
+    VK.Api.call('photos.getAlbums', {owner_id: kartinki.owner_id}, function (data) {
+        console.log(data);
+
+        kartinki.albums = data.response;
+        var albumIndex = Math.floor(Math.random() * data.response.length);
+        kartinki.getPhotosFromAlbum(kartinki.albums[albumIndex].aid, function(){
+            kartinki.startSlideshow();
+        });
+    });
+</script>
+</body>
+</html>

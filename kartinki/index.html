@@ -95,15 +95,27 @@
         apiId: kartinki.appId
     });
 
-    VK.Api.call('photos.getAlbums', {owner_id: kartinki.owner_id}, function (data) {
-        console.log(data);
+    VK.Auth.login(function(response) {
+        if (response.session) {
+            /* Пользователь успешно авторизовался */
+            VK.Api.call('photos.getAlbums', {owner_id: kartinki.owner_id}, function (data) {
+                console.log(data);
 
-        kartinki.albums = data.response;
-        var albumIndex = Math.floor(Math.random() * data.response.length);
-        kartinki.getPhotosFromAlbum(kartinki.albums[albumIndex].aid, function(){
-            kartinki.startSlideshow();
-        });
+                kartinki.albums = data.response;
+                var albumIndex = Math.floor(Math.random() * data.response.length);
+                kartinki.getPhotosFromAlbum(kartinki.albums[albumIndex].aid, function(){
+                    kartinki.startSlideshow();
+                });
+            });
+            if (response.settings) {
+                /* Выбранные настройки доступа пользователя, если они были запрошены */
+            }
+        } else {
+            /* Пользователь нажал кнопку Отмена в окне авторизации */
+        }
     });
+
+
 </script>
 </body>
 </html>

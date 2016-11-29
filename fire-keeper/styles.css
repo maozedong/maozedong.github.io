@@ -1,0 +1,73 @@
+body {
+    background-image: url("./assets/calcifer.gif");
+    background-size: cover;
+}
+
+.container {
+    height: 100%;
+}
+
+.white {
+    transition: all 1s;
+    /*height: 130px;*/
+    width: 340px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.hue-dark {
+    color: black;
+    font-weight: bold;
+}
+
+.time-left {
+    margin-bottom: 13px
+}
+
+.buttons-block {
+    margin-top: 8px
+}
+
+.last-btn {
+
+    margin-right: 0;
+}
+
+.loads-made {
+    float: right
+}
+
+.load-period {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+}
+
+.start-btn {
+    margin-top: -6px;
+}
+
+.fade.ng-leave {
+    transition: 0.5s linear all;
+    transform: translateY(0px);
+    opacity: 1;
+}
+
+.fade.ng-leave.ng-leave-active {
+    transform: translateY(-150px);
+    opacity: 0;
+    height: 0;
+}
+
+/* The starting CSS styles for the enter animation */
+.fade.ng-enter {
+    transition: 0.5s linear all;
+    transform: translateY(150px);
+    opacity: 0;
+}
+
+/* The finishing CSS styles for the enter animation */
+.fade.ng-enter.ng-enter-active {
+    opacity: 1;
+    transform: translateY(0px);
+}

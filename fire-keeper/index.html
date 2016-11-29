@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fire Keeper</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.7/angular-material.min.css">
+    <link rel="stylesheet" href="./styles.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-aria.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.7/angular-material.min.js"></script>
+    <script src="./app/app.js"></script>
+</head>
+<body ng-app="boiler-duty" ng-controller="main as main">
+<div layout="row" layout-align="center center" class="container">
+    <diw class="white md-padding">
+        <div layout="column" class="fade " ng-if="!main.isStarted">
+            <md-input-container class="hue-dark  load-period">
+                <label class="hue-dark ">Load period(minutes)</label>
+                <input type="text" ng-model="main.loadPeriod">
+            </md-input-container>
+            <div layout="row" layout-align="end center ">
+                <md-button class="md-primary last-btn start-btn md-raised" ng-click="main.start()">Start</md-button>
+            </div>
+        </div>
+        <div class="fade" ng-if="main.isStarted">
+            <div class=" time-left">Time left: {{main.nextLoad.timeLeft|time}}</div>
+            <span>Percents left: {{main.nextLoad.percentsLeft}}%</span>
+            <span class="loads-made">Loads made: {{main.loadsMade}}</span>
+            <md-progress-linear md-mode="determinate" value="{{main.nextLoad.percentsLeft}}"></md-progress-linear>
+            <div layout="row" class=" buttons-block" layout-align="end center ">
+                <md-button class="md-primary md-raised" ng-click="main.stop()">Stop</md-button>
+                <md-button class="md-primary last-btn md-raised" ng-click="main.makeLoad()">Make load</md-button>
+            </div>
+            <div>Loads made: <span ng-bind="main.loadsMade"></span></div>
+        </div>
+    </diw>
+</div>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFZ Пошук Термінів</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#2196F3">
+</head>
+<body>
+    <header>
+        <h1>🏥 NFZ Пошук Термінів</h1>
+        <p>Знайдіть найближчі доступні терміни прийому</p>
+    </header>
+
+    <main>
+        <form id="searchForm">
+            <!-- Required fields -->
+            <div class="form-group">
+                <label>Тип випадку:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="case" value="1" checked>
+                        stabilny (стабільний)
+                    </label>
+                    <label>
+                        <input type="radio" name="case" value="2">
+                        pilny (терміновий)
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="children">
+                    Для дітей (świadczenia udzielane dzieciom)
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="benefit">Яке świadczenie?</label>
+                <div class="benefit-search-container">
+                    <input type="text" id="benefit" placeholder="Введіть назву спеціальності (мін. 3 символи)" autocomplete="off">
+                    <div id="benefitDropdown" class="benefit-dropdown" style="display: none;">
+                        <div class="benefit-dropdown-content">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                <div id="benefitError" class="error-message" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="province">Воєводство:</label>
+                <select id="province" required>
+                    <option value="">Оберіть воєводство</option>
+                    <option value="01">Dolnośląskie</option>
+                    <option value="02">Kujawsko-Pomorskie</option>
+                    <option value="03">Lubelskie</option>
+                    <option value="04">Lubuskie</option>
+                    <option value="05">Łódzkie</option>
+                    <option value="06">Małopolskie</option>
+                    <option value="07">Mazowieckie</option>
+                    <option value="08">Opolskie</option>
+                    <option value="09">Podkarpackie</option>
+                    <option value="10">Podlaskie</option>
+                    <option value="11">Pomorskie</option>
+                    <option value="12">Śląskie</option>
+                    <option value="13">Świętokrzyskie</option>
+                    <option value="14">Warmińsko-Mazurskie</option>
+                    <option value="15">Wielkopolskie</option>
+                    <option value="16">Zachodniopomorskie</option>
+                </select>
+            </div>
+
+            <!-- Optional fields in collapsible section -->
+            <details>
+                <summary>Додаткові фільтри</summary>
+                
+                <div class="form-group">
+                    <label for="locality">Місто:</label>
+                    <input type="text" id="locality" list="localityList" placeholder="Введіть назву міста">
+                    <datalist id="localityList">
+                        <!-- Will be populated dynamically -->
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label for="provider">Шпиталь / поліклініка:</label>
+                    <input type="text" id="provider" placeholder="Назва закладу">
+                </div>
+
+                <div class="form-group">
+                    <label for="place">Місце надання:</label>
+                    <input type="text" id="place" placeholder="Наприклад: Poradnia Kardiologiczna">
+                </div>
+
+                <div class="form-group">
+                    <label for="street">Вулиця:</label>
+                    <input type="text" id="street" placeholder="Назва вулиці">
+                </div>
+            </details>
+
+            <div class="form-actions">
+                <button type="submit" id="searchBtn">🔍 Знайти терміни</button>
+                <button type="button" id="refreshBtn" disabled>🔄 Оновити</button>
+            </div>
+        </form>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Пошук термінів...</p>
+        </div>
+
+        <div id="results-section" style="display: none;">
+            <h2>Результати пошуку</h2>
+            <div id="results-info"></div>
+            
+            <!-- Desktop table view -->
+            <table id="results-table" class="desktop-only">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Спеціальність</th>
+                        <th>Заклад</th>
+                        <th>Адреса</th>
+                        <th>Відстань (км)</th>
+                        <th>Телефон</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be populated here -->
+                </tbody>
+            </table>
+            
+            <!-- Mobile card view -->
+            <div id="results-cards" class="mobile-only">
+                <!-- Cards will be populated here -->
+            </div>
+        </div>
+
+        <div id="details-section" style="display: none;">
+            <h2>Деталі прийому</h2>
+            <div id="details-content"></div>
+            <button type="button" id="backBtn">← Назад до результатів</button>
+        </div>
+
+        <div id="settings-section">
+            <details>
+                <summary>⚙️ Налаштування</summary>
+                <div class="form-group">
+                    <label for="refreshInterval">Інтервал оновлення (хвилини):</label>
+                    <input type="number" id="refreshInterval" min="5" max="1440" value="60">
+                </div>
+                <div class="form-group">
+                    <button type="button" id="enableNotifications">🔔 Увімкнути сповіщення</button>
+                    <button type="button" id="disableNotifications" style="display: none;">🔕 Вимкнути сповіщення</button>
+                    <span id="notificationStatus"></span>
+                </div>
+                <div class="form-group">
+                    <label for="notificationDateThreshold">Сповіщати про терміни до дати:</label>
+                    <input type="date" id="notificationDateThreshold" title="Отримувати сповіщення тільки про терміни до цієї дати">
+                </div>
+            </details>
+        </div>
+    </main>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html> 

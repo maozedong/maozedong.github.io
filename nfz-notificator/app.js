@@ -764,8 +764,8 @@ function sendNotification(result) {
             id: result.id,
             phone: result.phone,
             url: `/index.html#slot=${result.id}`
-        },
-        actions: result.phone ? [{action: 'call', title: '📞 Дзвінок'}] : []
+        }
+        // Note: actions are not supported for main thread notifications
     });
     
     notification.onclick = () => {
@@ -918,8 +918,8 @@ function sendTestNotification() {
             phone: testData.phone,
             url: `/index.html#slot=${testData.id}`,
             isTest: true
-        },
-        actions: [{action: 'call', title: '📞 Дзвінок'}]
+        }
+        // Note: actions are not supported for main thread notifications
     });
     
     notification.onclick = () => {

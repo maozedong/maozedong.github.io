@@ -9,6 +9,7 @@ let refreshInterval = null;
 let currentBenefits = [];
 let benefitSearchTimeout = null;
 let benefitSelectedIndex = -1;
+let testNotificationInterval = null;
 
 // DOM Elements
 const elements = {
@@ -35,7 +36,9 @@ const elements = {
     enableNotificationsBtn: document.getElementById('enableNotifications'),
     disableNotificationsBtn: document.getElementById('disableNotifications'),
     notificationStatus: document.getElementById('notificationStatus'),
-    notificationDateThreshold: document.getElementById('notificationDateThreshold')
+    notificationDateThreshold: document.getElementById('notificationDateThreshold'),
+    testNotificationsBtn: document.getElementById('testNotificationsBtn'),
+    testNotificationStatus: document.getElementById('testNotificationStatus')
 };
 
 // Initialize application
@@ -81,6 +84,7 @@ function setupEventListeners() {
     elements.enableNotificationsBtn.addEventListener('click', handleNotificationPermission);
     elements.disableNotificationsBtn.addEventListener('click', handleDisableNotifications);
     elements.notificationDateThreshold.addEventListener('change', handleDateThresholdChange);
+    elements.testNotificationsBtn.addEventListener('click', handleTestNotifications);
     
     // Handle hash changes for deep linking
     window.addEventListener('hashchange', handleUrlHash);
@@ -799,6 +803,14 @@ function handleDisableNotifications() {
         refreshInterval = null;
     }
     
+    // Clear test notifications
+    if (testNotificationInterval) {
+        clearInterval(testNotificationInterval);
+        testNotificationInterval = null;
+        elements.testNotificationsBtn.textContent = '🧪 Тестові сповіщення';
+        elements.testNotificationStatus.textContent = 'Вимкнені';
+    }
+    
     // Clear saved notification data
     localStorage.removeItem('bestResultDate');
     localStorage.removeItem('bestResultId');
@@ -846,4 +858,80 @@ function updateNotificationStatus() {
             elements.disableNotificationsBtn.style.display = 'none';
             break;
     }
+}
+
+// Handle test notifications toggle
+function handleTestNotifications() {
+    if (!('Notification' in window)) {
+        alert('Ваш браузер не підтримує сповіщення');
+        return;
+    }
+    
+    if (Notification.permission !== 'granted') {
+        alert('Спочатку увімкніть сповіщення');
+        return;
+    }
+    
+    if (testNotificationInterval) {
+        // Stop test notifications
+        clearInterval(testNotificationInterval);
+        testNotificationInterval = null;
+        elements.testNotificationsBtn.textContent = '🧪 Тестові сповіщення';
+        elements.testNotificationStatus.textContent = 'Вимкнені';
+    } else {
+        // Start test notifications
+        testNotificationInterval = setInterval(() => {
+            sendTestNotification();
+        }, 30000); // 30 seconds
+        
+        elements.testNotificationsBtn.textContent = '🛑 Зупинити тестові';
+        elements.testNotificationStatus.textContent = 'Увімкнені ✅';
+        
+        // Send first test notification immediately
+        sendTestNotification();
+    }
+}
+
+// Send test notification with stub data
+function sendTestNotification() {
+    const testData = {
+        benefit: 'PORADA LEKARSKA',
+        date: getRandomFutureDate(),
+        locality: 'Warszawa',
+        address: 'ul. Testowa 123',
+        distance: Math.random() * 10 + 1, // Random distance between 1-11 km
+        provider: 'Testowy Szpital',
+        phone: '+48 123 456 789',
+        id: 'test-' + Date.now()
+    };
+    
+    const title = `${testData.benefit} – ${formatDate(testData.date)}`;
+    const body = `${testData.locality}, ${testData.address} (${testData.distance.toFixed(1)} км) [ТЕСТ] Натисніть, щоб переглянути`;
+    
+    const notification = new Notification(title, {
+        body: body,
+        icon: '/icons/icon-192.png',
+        badge: '/icons/badge.png',
+        vibrate: [100, 50, 100],
+        data: {
+            id: testData.id,
+            phone: testData.phone,
+            url: `/index.html#slot=${testData.id}`,
+            isTest: true
+        },
+        actions: [{action: 'call', title: '📞 Дзвінок'}]
+    });
+    
+    notification.onclick = () => {
+        window.focus();
+        alert('Це тестове сповіщення. Реальні дані будуть показані після пошуку.');
+        notification.close();
+    };
+}
+
+// Generate random future date within next 30 days
+function getRandomFutureDate() {
+    const now = new Date();
+    const futureDate = new Date(now.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000);
+    return futureDate.toISOString().split('T')[0];
 } 

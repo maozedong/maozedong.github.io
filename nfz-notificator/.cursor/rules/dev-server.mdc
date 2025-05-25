@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+never start a dev server. There's a cursor server launched on 5500 port and it is reloaded dynamically

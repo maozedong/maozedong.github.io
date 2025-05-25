@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+this project is a part of the github repo. Repo root is in the parent folder. Never initialize new repository in this project, use parent repo instead

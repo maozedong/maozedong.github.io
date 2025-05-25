@@ -122,7 +122,7 @@
                 <thead>
                     <tr>
                         <th>Дата</th>
-                        <th>Спеціальність</th>
+                        <th>Оновлено</th>
                         <th>Заклад</th>
                         <th>Адреса</th>
                         <th>Відстань (км)</th>
@@ -137,6 +137,13 @@
             <!-- Mobile card view -->
             <div id="results-cards" class="mobile-only">
                 <!-- Cards will be populated here -->
+            </div>
+            
+            <!-- Pagination controls -->
+            <div id="pagination-controls" class="pagination-controls" style="display: none;">
+                <button type="button" id="prevPageBtn" disabled>← Попередня</button>
+                <span id="pageInfo">Сторінка 1 з 1</span>
+                <button type="button" id="nextPageBtn" disabled>Наступна →</button>
             </div>
         </div>
 
@@ -170,6 +177,6 @@
         </div>
     </main>
 
-    <script src="app.js" type="module"></script>
+    <script src="js/app.js" type="module"></script>
 </body>
 </html> 
